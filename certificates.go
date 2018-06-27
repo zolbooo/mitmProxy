@@ -117,7 +117,7 @@ const (
 // GenCert creates new certifice for host signed using specified CA certificate
 func GenCert(names []string) (*tls.Certificate, error) {
 	if _, err := os.Stat(certPath + names[0] + ".pem"); os.IsNotExist(err) {
-		now := time.Now().Add(-1 * time.Hour).UTC()
+		now := time.Now().UTC()
 		if !caCertificate.Leaf.IsCA {
 			return nil, errors.New("CA cert is not a CA")
 		}
