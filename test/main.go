@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 
 	mitmproxy ".."
@@ -15,12 +14,12 @@ func (nopCloser) Close() error {
 	return nil
 }
 
+func intercept(req *mitmproxy.ProxyRequest) {
+	if err := req.SendRequest(); err == nil {
+		req.SendResponse()
+	}
+}
+
 func main() {
-	panic(mitmproxy.StartProxyServer(":8080", func(req *mitmproxy.ProxyRequest) {
-		if err := req.SendRequest(); err == nil {
-			req.SendResponse()
-		} else {
-			fmt.Println(err)
-		}
-	}))
+	panic(mitmproxy.StartProxyServer(":8080", intercept))
 }
