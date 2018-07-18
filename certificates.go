@@ -103,7 +103,7 @@ func init() {
 
 const (
 	caMaxAge   = 5 * 365 * 24 * time.Hour
-	leafMaxAge = 24 * time.Hour
+	leafMaxAge = 365 * 24 * time.Hour
 	caUsage    = x509.KeyUsageDigitalSignature |
 		x509.KeyUsageContentCommitment |
 		x509.KeyUsageKeyEncipherment |
