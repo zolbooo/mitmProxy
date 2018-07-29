@@ -18,7 +18,7 @@ import (
 4) Call SendResponse()
 */
 
-// StartProxyServer listens for all the connections to the proxy server and handles requests.StartProxyServer
+// StartProxyServer listens for all the connections to the proxy server and handles requests.
 // Address is listen address, e.g.: ":8090", "0.0.0.0:8011"
 func StartProxyServer(address string, proxyRequestHandler func(*ProxyRequest)) error {
 	l, err := net.Listen("tcp", address)
