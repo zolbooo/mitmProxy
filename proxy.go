@@ -21,18 +21,25 @@ import (
 
 // StartProxyServer listens for all the connections to the proxy server and handles requests.
 // Address is listen address, e.g.: ":8090", "0.0.0.0:8011"
-func StartProxyServer(address string, proxyRequestHandler func(*ProxyRequest)) error {
+func StartProxyServer(address string, proxyRequestHandler func(*ProxyRequest)) (chan bool, error) {
+	done := make(chan bool)
+
 	l, err := net.Listen("tcp", address)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	for {
-		conn, err := l.Accept()
-		if err == nil {
-			go handleConnection(conn, proxyRequestHandler)
+	go func() {
+		for {
+			conn, err := l.Accept()
+			if err == nil {
+				go handleConnection(conn, proxyRequestHandler)
+			}
 		}
-	}
+		done <- true
+	}()
+
+	return done, nil
 }
 
 func handleConnection(conn net.Conn, proxyRequestHandler func(*ProxyRequest)) {
