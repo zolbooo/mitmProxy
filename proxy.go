@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"net"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -71,6 +72,30 @@ func handleConnection(conn net.Conn, proxyRequestHandler func(*ProxyRequest)) {
 		if err != nil {
 			return
 		}
+	} else if request.URL.Path == "/" {
+		defer conn.Close()
+
+		resp := new(http.Response)
+		resp.Status = "200 OK"
+		resp.StatusCode = 200
+		resp.Proto = request.Proto
+		resp.ProtoMajor = request.ProtoMajor
+		resp.ProtoMinor = request.ProtoMinor
+		resp.Header = make(http.Header)
+		resp.Header.Add("Content-Type", "text/plain")
+		resp.Header.Add("Content-Disposition", "attachment; filename=\"rootCA.pem\"")
+
+		file, err := os.OpenFile("./certificates/rootCA.pem", os.O_RDONLY, 0600)
+		if err != nil {
+			writeError(conn, http.StatusBadGateway)
+			return
+		}
+		resp.Body = file
+
+		if err = resp.Write(conn); err != nil {
+			writeError(conn, http.StatusBadGateway)
+		}
+		return
 	} else {
 		// We got raw HTTP request, connect to the server and pass request to the handler
 		serverConn, err := net.Dial("tcp", request.Host+":80")

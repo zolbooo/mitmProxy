@@ -70,9 +70,9 @@ func GenerateCA(CN string) {
 		Bytes: keyDER,
 	})
 	epanic(err)
-	err = ioutil.WriteFile(certPath+"rootCA.pem", caCert, 0700)
+	err = ioutil.WriteFile(CertPath+"rootCA.pem", caCert, 0700)
 	epanic(err)
-	err = ioutil.WriteFile(certPath+"rootCA.key", caKey, 0700)
+	err = ioutil.WriteFile(CertPath+"rootCA.key", caKey, 0700)
 	epanic(err)
 
 	caCertificate, err = tls.X509KeyPair(caCert, caKey)
@@ -87,12 +87,12 @@ func init() {
 		err           error
 	)
 
-	if _, err := os.Stat(certPath + "rootCA.pem"); os.IsNotExist(err) {
+	if _, err := os.Stat(CertPath + "rootCA.pem"); os.IsNotExist(err) {
 		GenerateCA("test.com")
 	}
-	caCert, err = ioutil.ReadFile(certPath + "rootCA.pem")
+	caCert, err = ioutil.ReadFile(CertPath + "rootCA.pem")
 	epanic(err)
-	caKey, err = ioutil.ReadFile(certPath + "rootCA.key")
+	caKey, err = ioutil.ReadFile(CertPath + "rootCA.key")
 	epanic(err)
 
 	caCertificate, err = tls.X509KeyPair(caCert, caKey)
@@ -116,7 +116,7 @@ const (
 
 // GenCert creates new certifice for host signed using specified CA certificate
 func GenCert(names []string) (*tls.Certificate, error) {
-	if _, err := os.Stat(certPath + names[0] + ".pem"); os.IsNotExist(err) {
+	if _, err := os.Stat(CertPath + names[0] + ".pem"); os.IsNotExist(err) {
 		now := time.Now().UTC()
 		if !caCertificate.Leaf.IsCA {
 			return nil, errors.New("CA cert is not a CA")
@@ -159,14 +159,14 @@ func GenCert(names []string) (*tls.Certificate, error) {
 			Type:  "ECDSA PRIVATE KEY",
 			Bytes: keyBytes,
 		})
-		err = ioutil.WriteFile(certPath+names[0]+".pem", certBytes, 0700)
+		err = ioutil.WriteFile(CertPath+names[0]+".pem", certBytes, 0700)
 		epanic(err)
-		err = ioutil.WriteFile(certPath+names[0]+".key", keyBytes, 0700)
+		err = ioutil.WriteFile(CertPath+names[0]+".key", keyBytes, 0700)
 		epanic(err)
 
 		return cert, nil
 	}
-	cert, err := tls.LoadX509KeyPair(certPath+names[0]+".pem", certPath+names[0]+".key")
+	cert, err := tls.LoadX509KeyPair(CertPath+names[0]+".pem", CertPath+names[0]+".key")
 	if err == nil {
 		cert.Leaf, _ = x509.ParseCertificate(cert.Certificate[0])
 	}
