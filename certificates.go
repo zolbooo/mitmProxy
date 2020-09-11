@@ -16,8 +16,8 @@ import (
 	"time"
 )
 
-// TODO: set your own certPath
-var certPath = "/app/certificates/"
+// CertPath is path where all created certificates will be stored. Should be an existing directory
+var CertPath = "./certificates/"
 
 var caCertificate tls.Certificate
 
@@ -45,9 +45,9 @@ func GenerateCA(CN string) {
 		NotAfter:              now.Add(caMaxAge),
 		KeyUsage:              caUsage,
 		BasicConstraintsValid: true,
-		IsCA:               true,
-		MaxPathLen:         2,
-		SignatureAlgorithm: x509.ECDSAWithSHA256,
+		IsCA:                  true,
+		MaxPathLen:            2,
+		SignatureAlgorithm:    x509.ECDSAWithSHA256,
 	}
 	key, err := genKeyPair()
 	if err != nil {
